@@ -1,7 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity conversondisplay is
+entity conversondisplay is -- entidade do conversor display
 port(
   CTRL      : in std_logic_vector(1 downto 0);
   Y      : in std_logic_vector(3 downto 0);
