@@ -37,7 +37,6 @@ architecture estrutural of subtra_4bits is
 	component somador_4bits is 
 	port(
 		a,b: in std_logic_vector(3 downto 0); -- vectors input the 4 bits
-		c0 : in std_logic; --logic input
 		s  : out std_logic_vector(3 downto 0); -- vectors output the 4 bits
 		c4 : out std_logic --logic output
 		);
@@ -45,8 +44,8 @@ architecture estrutural of subtra_4bits is
 	
 	begin -- técnica do eleva dois
 		inv_b0: inverter port map(b, t); -- inveter o numero a ser subtraido
-		sub: somador_4bits port map(a,t, queue, result); -- soma com o numero maior que o que invertir
-		sub2: somador_4bits port map(result, "0001", queue, resultSub); -- soma com 1 o resulta da soma anterior
+		sub: somador_4bits port map(a,t, result, queue); -- soma com o numero maior que o que invertir
+		sub2: somador_4bits port map(result, "0001", resultSub, queue); -- soma com 1 o resulta da soma anterior
 		trat: lessThan port map(a,b, agtb); -- fazendo tratamento para ver se b >a
 		aux(0) <= agtb; -- fazendo 4 bits para ser o erro
 		aux(1) <= agtb;

@@ -1,34 +1,39 @@
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.std_logic_signed.all;
-
--- declaring entity
-entity somador_4bits is 
+--libraries to be used are specified here
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+ 
+--entity declaration with port definitions
+entity somador_4bits is
 port(
-	a,b: in std_logic_vector(3 downto 0); -- vectors input the 4 bits
-	c0 : in std_logic; -- logic output 
-	s  : out std_logic_vector(3 downto 0); -- vectors input the 4 bits, which is the sum
-	c4 : out std_logic -- logic output, elevates one to make adder with more bits
-	);
+	a, b : in std_logic_vector(3 downto 0);  --4 bit input 1
+	s  : out std_logic_vector(3 downto 0);   -- 4 bit s
+	c4:  out std_logic   -- c4 out.
+);
 end somador_4bits;
-
--- declaring architecture
-architecture estrutural of somador_4bits is
-	signal vai_um : std_logic_vector(0 to 2); -- goes one bit by bit
-
-	-- include component somador_completo
-	component somador_completo is
-	port(
-		a,b	: in std_logic; -- logic inputs
-		cin	: in std_logic; -- logic input
-		s  	: out std_logic; -- logic output
-		cout	: out std_logic -- logic output
-	);
-	end component;
-	
-	begin -- bit bit adder
-		s1: somador_completo port map(a(0), b(0), c0, s(0), vai_um(0)); -- using the complete adder component to add bit by bit
-		s2: somador_completo port map(a(1), b(1), vai_um(0), s(1), vai_um(1)); -- using the complete adder component to add bit by bit
-		s3: somador_completo port map(a(2), b(2), vai_um(1), s(2), vai_um(2)); -- using the complete adder component to add bit by bit
-		s4: somador_completo port map(a(3), b(3), vai_um(2), s(3), c4); -- using the complete adder component to add bit by bit
-	end estrutural;
+ 
+--architecture of entity
+architecture Behavioral of somador_4bits is
+  --temporary signal declarations(for intermediate c4's).
+  signal c0,c1,c2,c3 : std_logic := '0';
+begin  
+ 
+  --first full adder
+  s(0) <= a(0) xor b(0);  --s calculation
+  c0 <= a(0) and b(0);          --c4 calculation
+   
+  --second full adder
+  s(1) <= a(1) xor b(1) xor c0;
+  c1 <= (a(1) and b(1)) or (a(1) and c0) or (b(1) and c0);
+ 
+  --third full adder
+  s(2) <= a(2) xor b(2) xor c1;
+  c2 <= (a(2) and b(2)) or (a(2) and c1) or (b(2) and c1);
+ 
+  --fourth(final) full adder
+  s(3) <= a(3) xor b(3) xor c2;
+  c3 <= (a(3) and b(3)) or (a(3) and c2) or (b(3) and c2);
+ 
+  --final c4 assignment
+  c4 <= c3;
+ 
+end Behavioral;
