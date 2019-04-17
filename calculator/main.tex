@@ -1,0 +1,292 @@
+\documentclass[
+	% -- opções da classe memoir --
+	12pt,				% tamanho da fonte
+	openright,			% capítulos começam em pág ímpar (insere página vazia caso preciso)
+	oneside,			% para impressão em verso e anverso. Oposto a oneside
+	a4paper,			% tamanho do papel. 
+	% -- opções do pacote babel --
+	% idioma adicional para hifenização
+	brazil,				% o último idioma é o principal do documento
+	]{abntex2}
+
+
+\usepackage{cmap}				% Mapear caracteres especiais no PDF
+\usepackage{lmodern}			% Usa a fonte Latin Modern			
+\usepackage[T1]{fontenc}		% Selecao de codigos de fonte.
+\usepackage[utf8]{inputenc}		% Codificacao do documento (conversão automática dos acentos)
+\usepackage{lastpage}			% Usado pela Ficha catalográfica
+\usepackage{indentfirst}		% Indenta o primeiro parágrafo de cada seção.
+\usepackage{color}				% Controle das cores
+\usepackage{graphicx}			% Inclusão de gráficos
+\usepackage{amsmath}
+\usepackage{mathtools}
+
+\usepackage[brazilian,hyperpageref]{backref}	 % Paginas com as citações na bibl
+\usepackage[alf]{abntex2cite}	% Citações padrão ABNT
+
+% Incluir código fonte
+%\usepackage{minted}
+
+% Use wide margins, but not quite so wide as fullpage.sty
+\marginparwidth 0.5in 
+\oddsidemargin 0.25in 
+\evensidemargin 0.25in 
+\marginparsep 0.25in
+\topmargin 0.25in 
+\textwidth 6in \textheight 8 in
+% That's about enough definitions
+
+% multirow allows you to combine rows in columns
+\usepackage{multirow}
+% tabularx allows manual tweaking of column width
+\usepackage{tabularx}
+% longtable does better format for tables that span pages
+\usepackage{longtable}
+
+
+\titulo{Minicalculadora de 4 bits em FPGA}
+\author{Discentes:\\\hspace{1cm}César Zaqueu Fernandes de Medeiros\\\hspace{1cm}Jhonat Heberson Avelino de Souza\\\hspace{1cm}Vinicius de Azevedo Menezes\\}
+
+\orientador{Kennedy Reurison Lopes}
+
+\institui{%
+  Universidade Federal do Rio Grande do Norte
+  \par
+  Centro de Tecnologia
+  \par
+  Departamento de Computação e Automação
+  \par
+  Engenharia de Computação}
+  \par
+  Orientador: Kennedy Reurison Lopes
+
+\local{Natal}
+
+\date{08 de março de 2019}
+
+
+
+% ---
+% Configurações de aparência do PDF final
+
+% informações do PDF
+\makeatletter
+\hypersetup{
+     	%pagebackref=true,
+		pdftitle={\@title}, 
+		pdfauthor={\@author},
+    	pdfsubject={\imprimirpreambulo},
+	    pdfcreator={LaTeX with abnTeX2},
+		pdfkeywords={abnt}{latex}{abntex}{abntex2}{trabalho acadêmico}, 
+		colorlinks=true,       		% false: boxed links; true: colored links
+    	linkcolor=black,          	% color of internal links
+    	citecolor=black,        		% color of links to bibliography
+    	filecolor=black,      		% color of file links
+		urlcolor=black,
+		bookmarksdepth=4
+}
+\makeatother
+% --- 
+
+% --- 
+% Espaçamentos entre linhas e parágrafos 
+% --- 
+
+% O tamanho do parágrafo é dado por:
+\setlength{\parindent}{1.3cm}
+
+% Controle do espaçamento entre um parágrafo e outro:
+\setlength{\parskip}{0.2cm}  % tente também \onelineskip
+
+% ---
+% compila o indice
+% ---
+\makeindex
+% ---
+
+% ----
+% Início do documento
+% ----
+\begin{document}
+
+% Retira espaço extra obsoleto entre as frases.
+\frenchspacing 
+
+% ----------------------------------------------------------
+% ELEMENTOS PRÉ-TEXTUAIS
+% ----------------------------------------------------------
+% ---
+% Capa
+% ---
+\imprimircapa
+% ---
+
+% ---
+% inserir o sumario
+% ---
+\pdfbookmark[0]{\contentsname}{toc}
+\tableofcontents*
+\cleardoublepage
+% ---
+
+
+
+% ----------------------------------------------------------
+% ELEMENTOS TEXTUAIS
+% ----------------------------------------------------------
+\textual
+
+% ----------------------------------------------------------
+% Introdução
+% ----------------------------------------------------------
+\chapter{Introdução}
+
+Este presente trabalho tem como objetivo apresentar, debater e principalmente aplicar os conhecimentos visto em sala de aula da disciplina DCA0212.1 – Circuitos Digitais – Laboratório, lecionada pelo professor Kennedy Reurison Lopes.
+	
+De início começaremos apresentando o nosso problema que se trata em projetar uma minicalculadora em VHDL e apresentá-la em uma placa FPGA. Apresentaremos a metodologia que foi utilizada durante a construção do nosso trabalho. Em seguida, iniciaremos a fase de conclusão do trabalho, onde apresentaremos como iremos solucionar o problema, dividindo essa apresentação em desenvolvimento, resultados e conclusão.
+
+\section{Resumo do problema}
+
+Este projeto no qual estamos aqui construindo, tem como objetivo a criação de uma minicalculadora feita em VHDL que deve implementar cinco operações básicas: Adição, subtração, maiorQue, menorQue e inversão. A entrada do projeto serão duas sequências de 4 bits.
+
+A escolha da operação será realizada através de 3 chaves de comando, e adicionalmente um botão liga/desliga, que desabilita todas as operações. Selecionada a operação, o circuito deverá efetuá-la de maneira correta, direcionando a resposta para um display de 7 segmentos, mostrando assim para o usuário o resultado da operação que ele selecionou nas chaves de comando.      
+
+Posteriormente, explicaremos mais detalhadamente como funcionará cada parte específica do projeto. Tendo em vista, que estamos apenas no resumo do projeto.
+    
+\section{Metodologia utilizada}
+
+Como pode-se observar na capa do trabalho, nosso grupo é formado por três integrantes. Com isso, para maior facilidade e que todos ficassem comprometidos com uma parte do projeto, dividimos o mesmo em três partes iguais, onde ficou da seguinte maneira:
+	
+Um componente ficou com as 5 funções de operações básicas, outro com o multiplexador e o último com o Conversor Display e a criação do relatório. Optamos por essa metodologia, pelo fato de que como basicamente os três blocos são “independentes” (dependendo apenas da saída do anterior), poderíamos assim cada um ficar com uma parte, e no final juntar todas e termos o trabalho completo e bem dividido, sem que nenhum ficasse sobrecarregado.
+	
+Cada componente teve total responsabilidade pela parte na qual ficou comprometido. Porém, todos tivemos o mesmo método de solução para o problema: usamos dos instrumentos utilizados em sala de aula, no qual já tínhamos utilizado, os códigos disponibilizados pelo professor, e total orientação do mesmo, que teve suma importância para criação deste trabalho, tendo em vista que o mesmo sempre se disponibilizou para ajuda seja por meio de e-mail, seja pessoalmente.  
+
+Então, com a ajuda do professor e com o material que tínhamos antes, conseguimos desenvolver a nossa minicalculadora, na qual a mesma consegue realizar as operações desejadas. E fornecer para o usuário o seu resultado em um display de 7 segmentos.
+	    
+\chapter{Apresentação da solução}
+
+De início, iremos apresentar a imagem disponibilizada pelo professor, para início do projeto. A partir dela, poderemos explicar como irá funcionar cada método do projeto, em seguida apresentar os respectivos códigos, e por fim o projeto final.
+
+A figura abaixo, representa o diagram geral da nossa minicalculadora (Figura 2). Vamos anilisá-la detalhadamente e explicar detalhadamente como funcionará a mesma.  
+
+    \begin{figure}[h!]
+    \centering
+    \includegraphics[scale = 0.65]{minicalculadora.png}
+    \caption{Diagrama geral da Minicalculadora}
+    \end{figure}
+
+Como foi destacado no resumo do trabalho, temos aqui o nosso diagrama geral com todos os problemas que teremos que solucionar. 
+
+Analisando a Figura 2, podemos iniciar nossa análise pelas nossas entradas. Como podemos ver, as entradas X1 e X2 são ambas entradas simples de 4 bits. Em seguida, nossas 5 operações, na qual apenas a inverter só recebe uma das entradas. Cada operação funciona da seguinte maneira: 
+
+\begin{itemize}
+
+        \item Subtração -> Retorna um número de 4 bits, resultado da subtração entre X1 e X2. E apresenta erro caso o resultado seja inesperado ;
+        \item Soma -> Retorna um número de 4 bits, resultado da soma entre X1 e X2. E acende o LED Co caso a soma ultrapasse o valor 15, e exibindo o valor no display;
+        \item MaiorQue -> O LED Co é aceso caso X1 seja maior que X2; 
+        \item MenorQue -> O LED Co é aceso caso X1 seja menor que X2;
+        \item Inverter -> Inverte o valor de X1. Ou seja, retorna seu complemento. 
+        
+\end{itemize}
+
+Após as nossas funções, vem o nosso multiplexador. O multiplexador é onde o usuário seleciona a função que deseja realizar. Ou seja, por meio das chaves seletoras S0, S1 e S2, o usuário escolhe uma das funções. Ao escolher uma das funções, automaticamente o resultado será repassado para o Conversor Display, que é a última parte do nosso projeto.
+
+Como podemos ver o multiplexador tem 3 saídas. Onde duas vão para o Conversor e uma para o LED. A saída Co do LED é para sinalizar o resultado de algumas funções, e só tem um bit, que é aceso ou apagado. Já as outras saídas são a Y, que é o resultado das funções e CTRL, que é para ter o controle do que será exibido no display. Então, o conversor recebe essas duas entradas, e dependendo do resultado da variável CTRL exibe no conversor display o resultado da operação selecionada pelo usuário, ou caso tenha dado algum problema, o símbolo de erro. 
+
+\chapter{Desenvolvimento e Resultados}
+
+Após ter sido apresentado na seção anterior, como funciona cada um dos elementos que formam o nosso projeto, vamos agora para a parte da apresentação de como desenvolvemos os códigos para conseguirmos solucionar os problemas desse trabalho.
+
+Seguiremos a ordem de como foram apresentados aqui no trabalho, primeiro mostraremos os códigos das cinco operações, em seguida o multiplexador e por final o conversor display.
+
+A seguir serão apresentadas as cinco funções responsáveis pelas operações básicas nas quais foram submetidas o projeto. Que são:
+1) Subtração, 2) Soma, 3) MaiorQue, 4) MenorQue e 5) Inverter. Os códigos serão apresentados nessa mesma ordem abaixo:
+
+ 
+ 
+        \begin{figure}[h!]
+        \centering
+        \includegraphics[scale = 0.7]{sub4bits.jpg}
+        \caption{Código da função subtração}
+        \end{figure}
+        
+        \begin{figure}[h!]
+        \centering
+        \includegraphics[scale = 0.65]{soma4bits.jpg}
+        \caption{Código da função soma}
+        \end{figure}
+        
+        \begin{figure}[h!]
+        \centering
+        \includegraphics[scale = 1]{somadorcompleto.jpg}
+        \caption{Código da função soma completa (Subrtração e Adição)}
+        \end{figure}
+        
+        \begin{figure}[h!]
+        \centering
+        \includegraphics[scale = 1]{maiorQ.jpg}
+        \caption{Código da função maior que}
+        \end{figure}
+
+        \begin{figure}[h!]
+        \centering
+        \includegraphics[scale = 0.8]{menorQ.jpg}
+        \caption{Código da função menor que}
+        \end{figure}
+
+        \begin{figure}[h!]
+        \centering
+        \includegraphics[scale = 1]{inverter.jpg}
+        \caption{Código da função inverter}
+        \end{figure}
+
+        \begin{figure}[h!]
+        \centering
+        \includegraphics[scale = 0.7]{selecionador.png}
+        \caption{Código da função 'Selecionador'}
+        \end{figure}
+
+        \begin{figure}[h!]
+        \centering
+        \includegraphics[scale = 0.9]{LED.png}
+        \caption{Código da função responsável pelo LED Co}
+        \end{figure}
+
+        \begin{figure}[h!]
+        \centering
+        \includegraphics[scale = 0.77]{m1.png}
+        \caption{Código da função Main - Parte 1}
+        \end{figure}
+
+        \begin{figure}[h!]
+        \centering
+        \includegraphics[scale = 1.1]{m2.png}
+        \caption{Código da função Main - Parte 2}
+        \end{figure}
+
+        \begin{figure}[h!]
+        \centering
+        \includegraphics[scale = 0.75]{m3.png}
+        \caption{Código da função Main - Parte 3}
+        \end{figure}
+
+        \begin{figure}[h!]
+        \centering
+        \includegraphics[scale = 0.88]{conversordisplay.png}
+        \caption{Código do Conversor Display}
+        \label{fig:superficie}
+        \end{figure}
+
+\chapter{Conclusão}
+    
+Com base no que foi visto em sala de aula, e repassado pelo professor, conseguimos concluir este projeto no qual é resposável pela nota da primeira unidade. 
+
+Encontramos algumas dificuldades ao decorrer do projeto, porém todas foram solucionadas durante a execução do mesmo, fazendo com que chegassemos no final do o trabalho executando todas suas funcionalidades. 
+
+No demais, deixamos aqui nossos agradecimentos ao professor que não mediu esforços para auxiliar na criação deste trabalho.
+    
+%\bibliographystyle{abnt-alf}
+\bibliography{ }
+    
+
+\end{document}
